@@ -144,6 +144,7 @@ export default function Pricing() {
                 response.razorpay_order_id,
                 response.razorpay_payment_id,
                 response.razorpay_signature,
+                planId,
               );
               await refreshUser();
               setSuccess(`You're now on the ${planId.charAt(0).toUpperCase() + planId.slice(1)} plan.`);
