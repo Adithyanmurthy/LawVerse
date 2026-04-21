@@ -230,9 +230,9 @@ LawVerse/
 | Name | Role |
 |------|------|
 | **Adithya N Murthy** | Team Lead & Full Stack Developer |
-| **Arjun R** | Backend Developer & ML Engineer |
-| **Priya M** | Frontend Developer & UI/UX Designer |
-| **Karthik V** | Data Engineer & DevOps |
+| **ABhishek Biradar** | Backend Developer & ML Engineer |
+| **Ajay Kumar T N** | Frontend Developer & UI/UX Designer |
+| **Aniketh Chakravarthy** | Data Engineer & DevOps |
 
 **Guide:** Dr. Ramesh Kumar, Professor, Department of CSE
 
