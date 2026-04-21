@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: lawverse-frontend
+    runtime: node
+    buildCommand: cd platform/frontend && npm install && npx next build
+    startCommand: cd platform/frontend && npx next start -p $PORT
+    envVars:
+      - key: NEXT_PUBLIC_API_BASE
+        value: https://your-cloudflare-tunnel-url.trycloudflare.com
+      - key: NEXT_PUBLIC_APP_NAME
+        value: LawVerse
