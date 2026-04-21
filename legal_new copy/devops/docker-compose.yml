@@ -1,0 +1,112 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg15
+    environment:
+      POSTGRES_DB: lcet
+      POSTGRES_USER: lcet
+      POSTGRES_PASSWORD: lcet_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lcet"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      LCET_DB_URL: postgresql+asyncpg://lcet:lcet_password@postgres:5432/lcet
+      LCET_DB_URL_SYNC: postgresql://lcet:lcet_password@postgres:5432/lcet
+      REDIS_URL: redis://redis:6379
+      LCET_MODEL_PATH: /app/models/production
+      LCET_TOKENIZER_PATH: /app/models/tokenizer/tokenizer.json
+      JWT_SECRET: change-me-in-production-use-openssl-rand
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    environment:
+      API_BASE_URL: http://backend:8000
+      WS_URL: ws://backend:8000/api/v1/ws
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python -m src.continuous.orchestrator
+    environment:
+      LCET_DB_URL: postgresql+asyncpg://lcet:lcet_password@postgres:5432/lcet
+      LCET_DB_URL_SYNC: postgresql://lcet:lcet_password@postgres:5432/lcet
+      REDIS_URL: redis://redis:6379
+      LCET_MODEL_PATH: /app/models/production
+      LCET_TOKENIZER_PATH: /app/models/tokenizer/tokenizer.json
+      JWT_SECRET: change-me-in-production-use-openssl-rand
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./monitoring/grafana:/etc/grafana/provisioning
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3001:3000"
+    depends_on:
+      - prometheus
+
+volumes:
+  postgres_data:
+  prometheus_data:
+  grafana_data:

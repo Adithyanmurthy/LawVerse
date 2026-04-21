@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lcet-backend
+  labels:
+    app: lcet
+    component: backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: lcet
+      component: backend
+  template:
+    metadata:
+      labels:
+        app: lcet
+        component: backend
+    spec:
+      containers:
+      - name: backend
+        image: lcet-backend:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: LCET_DB_URL
+          valueFrom:
+            secretKeyRef:
+              name: lcet-secrets
+              key: LCET_DB_URL
+        - name: LCET_DB_URL_SYNC
+          valueFrom:
+            secretKeyRef:
+              name: lcet-secrets
+              key: LCET_DB_URL_SYNC
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: lcet-config
+              key: REDIS_URL
+        - name: LCET_MODEL_PATH
+          valueFrom:
+            configMapKeyRef:
+              name: lcet-config
+              key: LCET_MODEL_PATH
+        - name: LCET_TOKENIZER_PATH
+          valueFrom:
+            configMapKeyRef:
+              name: lcet-config
+              key: LCET_TOKENIZER_PATH
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: lcet-secrets
+              key: JWT_SECRET
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1000m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/v1/health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        volumeMounts:
+        - name: models
+          mountPath: /app/models
+      volumes:
+      - name: models
+        persistentVolumeClaim:
+          claimName: lcet-models-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lcet-backend
+spec:
+  selector:
+    app: lcet
+    component: backend
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: 8000
+  type: ClusterIP

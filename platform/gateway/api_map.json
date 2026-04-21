@@ -1,0 +1,66 @@
+{
+  "gateway_url": "http://localhost:9000",
+  "services": {
+    "lcet": {
+      "prefix": "/api/lcet",
+      "features": {
+        "search": {
+          "endpoint": "/search",
+          "method": "GET",
+          "params": ["q"],
+          "description": "Semantic search across legal documents"
+        },
+        "concepts": {
+          "list": { "endpoint": "/concepts", "method": "GET" },
+          "get": { "endpoint": "/concepts/{name}", "method": "GET" },
+          "evolution": { "endpoint": "/concepts/{name}/evolution", "method": "GET" }
+        },
+        "analysis": {
+          "smi": { "endpoint": "/analysis/smi", "method": "POST", "body": ["concept", "period1", "period2"] },
+          "ner": { "endpoint": "/analysis/ner", "method": "POST", "body": ["text"] },
+          "drift": { "endpoint": "/analysis/drift", "method": "POST", "body": ["concept"] }
+        },
+        "cases": {
+          "list": { "endpoint": "/cases", "method": "GET", "params": ["court", "year", "q", "page", "limit"] },
+          "stats": { "endpoint": "/cases/stats", "method": "GET" },
+          "get": { "endpoint": "/cases/{doc_id}", "method": "GET" }
+        },
+        "documents": {
+          "list": { "endpoint": "/documents", "method": "GET" },
+          "get": { "endpoint": "/documents/{id}", "method": "GET" },
+          "impact": { "endpoint": "/documents/{id}/impact", "method": "GET" }
+        },
+        "auth": {
+          "register": { "endpoint": "/auth/register", "method": "POST", "body": ["email", "password", "full_name"] },
+          "login": { "endpoint": "/auth/login", "method": "POST", "body": ["email", "password"] }
+        }
+      }
+    },
+    "contract": {
+      "prefix": "/api/contract",
+      "features": {
+        "auth": {
+          "register": { "endpoint": "/auth/register", "method": "POST", "body": ["email", "password", "full_name"] },
+          "login": { "endpoint": "/auth/login", "method": "POST", "body": ["email", "password"] },
+          "me": { "endpoint": "/auth/me", "method": "GET", "auth": true },
+          "google": { "endpoint": "/auth/google", "method": "GET" }
+        },
+        "contracts": {
+          "upload": { "endpoint": "/contracts/upload", "method": "POST", "auth": true, "body": "multipart/form-data" },
+          "list": { "endpoint": "/contracts", "method": "GET", "auth": true },
+          "delete": { "endpoint": "/contracts/{id}", "method": "DELETE", "auth": true }
+        },
+        "analyses": {
+          "get": { "endpoint": "/analyses/{contract_id}", "method": "GET", "auth": true },
+          "report": { "endpoint": "/analyses/{contract_id}/report", "method": "GET", "auth": true, "response": "PDF" },
+          "feedback": { "endpoint": "/analyses/{analysis_id}/feedback", "method": "POST", "auth": true }
+        },
+        "billing": {
+          "create_order": { "endpoint": "/billing/order", "method": "POST", "auth": true, "body": ["plan"] },
+          "verify": { "endpoint": "/billing/verify", "method": "POST", "auth": true },
+          "webhook": { "endpoint": "/billing/webhook", "method": "POST" }
+        }
+      }
+    }
+  }
+}

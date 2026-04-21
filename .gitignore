@@ -1,0 +1,37 @@
+# ── Dependencies ──
+node_modules/
+.next/
+__pycache__/
+*.pyc
+.venv/
+.venv_win/
+.npm-cache/
+
+# ── AI Models (too large for GitHub) ──
+model/pretrained/
+model/cache/
+
+# ── Data (too large for GitHub) ──
+data/raw/
+data/corpus/
+data/embeddings/
+data/processed/
+data/*.db
+*.db
+
+# ── Secrets ──
+.env
+.env.local
+backend/.env
+config/api_keys.json
+
+# ── OS Files ──
+.DS_Store
+*.log
+*.tmp
+logs/*.log
+logs/*.pid
+
+# ── Build artifacts ──
+*.pack.gz
+*.pkl

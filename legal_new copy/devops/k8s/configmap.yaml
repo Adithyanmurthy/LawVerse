@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lcet-config
+data:
+  REDIS_URL: redis://redis:6379
+  LCET_MODEL_PATH: /app/models/production
+  LCET_TOKENIZER_PATH: /app/models/tokenizer/tokenizer.json
+  API_HOST: "0.0.0.0"
+  API_PORT: "8000"
+  LCET_HEALTH_PORT: "8081"
+  LOG_LEVEL: INFO
