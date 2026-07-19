@@ -234,7 +234,7 @@ LawVerse/
 | **Ajay Kumar T N** | Frontend Developer & UI/UX Designer |
 | **Aniketh Chakravarthy** | Data Engineer & DevOps |
 
-**Guide:** Dr. Ramesh Kumar, Professor, Department of CSE
+**Guide:** Manjul Krishna Gupta , Professor, Department of CSE
 
 **Institution:** RV University, Bengaluru
 
