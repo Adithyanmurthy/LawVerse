@@ -35,8 +35,8 @@ function LoginForm() {
     try {
       const data = await login(email, password);
       setToken(data.access_token);
-      router.push("/dashboard");
-      router.refresh();
+      // Full navigation so AuthProvider remounts and re-reads the token (soft push left auth state stale → bounced back to /login)
+      window.location.href = "/dashboard";
     } catch (err: any) {
       setError(err.message || "Invalid email or password.");
     } finally {
